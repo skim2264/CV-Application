@@ -5,28 +5,27 @@ import Header from './components/Header';
 import Education from './components/Education';
 import Experience from './components/Experience';
 import Skills from './components/Skills';
-import Activities from './components/Activities';
 
 class App extends Component {
   constructor() {
     super();
     this.state = {
-
     };
   }
+
 
   render() {
     return (
       <div className = "appDiv">
-        <Information></Information>
-        <Header></Header>
+        <Information ></Information>
+        <Header name="Education"></Header>
         <Education></Education>
-        <Header></Header>
+        <Header name="Experience"></Header>
         <Experience></Experience>
-        <Header></Header>
+        <Header name="Activities"></Header>
+        <Experience></Experience>
+        <Header name="Skills"></Header>
         <Skills></Skills>
-        <Header></Header>
-        <Activities></Activities>
       </div>
     );
   }
