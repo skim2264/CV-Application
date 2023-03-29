@@ -69,7 +69,7 @@ class Experience extends Component {
     }
 
     cancelButton = (e) => {
-        const targetId = e.target.parentElement.id;
+        const targetId = e.target.parentElement.parentElement.id;
 
         this.setState(prevState => ({
             experienceList: prevState.experienceList.map(

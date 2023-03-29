@@ -1,7 +1,8 @@
-.informationDiv {
+.informationDiv, .infoForm {
     display: flex;
     flex-direction: column;
     align-items: center;
+    gap: 10px;
 }
 
 .informationDivChild {
@@ -12,4 +13,13 @@
 .informationDivChild>p:not(:first-child) {
     border-left: 1px solid black;
     padding-left: 20px;
+}
+
+#infoname {
+    font-size: 18px;
+}
+
+.buttonsDiv {
+    display: flex;
+    justify-content: center;
 }

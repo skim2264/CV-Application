@@ -5,10 +5,14 @@ const SkillsForm = (props) => {
 
     return (
         <form className="form" onSubmit={submitForm} id={id}>
-            <input placeholder="Skill Name" name="skillName" onChange={handleChange} value={skill.school}></input>
-            <input placeholder="Skill" name="skills" onChange={handleChange} value={skill.city}></input>
-            <button type="submit">Save</button>
-            <button onClick={cancelButton}>Cancel</button>
+            <div className="line">
+                <input placeholder="Skill Name" name="skillName" className="h3input" onChange={handleChange} value={skill.school}></input>
+                <input placeholder="List of skills:" name="skills" onChange={handleChange} value={skill.city}></input>
+            </div>    
+             <div className="buttonsDiv">
+                <button type="submit">Save</button>
+                <button onClick={cancelButton}>Cancel</button>
+            </div>
         </form>
     )
 }
