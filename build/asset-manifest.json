@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/skim2264.github.io/CV-Application/static/css/main.82b4965d.css",
+    "main.js": "/skim2264.github.io/CV-Application/static/js/main.430a7e3d.js",
+    "index.html": "/skim2264.github.io/CV-Application/index.html",
+    "main.82b4965d.css.map": "/skim2264.github.io/CV-Application/static/css/main.82b4965d.css.map",
+    "main.430a7e3d.js.map": "/skim2264.github.io/CV-Application/static/js/main.430a7e3d.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.82b4965d.css",
+    "static/js/main.430a7e3d.js"
+  ]
+}
