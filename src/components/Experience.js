@@ -140,7 +140,7 @@ class Experience extends Component {
                 city: '',
                 posName: '',
                 years: '',
-                descrip: [],
+                descrip: '',
                 id: '',
                 formtoggle: false
             }            
