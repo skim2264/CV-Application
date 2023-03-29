@@ -1,160 +1,127 @@
-import React, { Component } from "react";
-import '../styles/components.css';
+import React, { useState } from "react";
 import Buttons from "./Buttons";
 import uniqid from 'uniqid';
 import SkillsForm from "./SkillsForm";
 
-class Skills extends Component {
-    constructor () {
-        super();
-        this.state = {
-            skillsList: [{
-                skillName: 'skill Name',
-                skills: 'list of skills',
-                id: uniqid(),
-                formtoggle: false
-            }],
-            skill: {
-                skillName: 'skill Name',
-                skills: 'list of skills',
-                id: '',
-                formtoggle: false
-            },
-            divHovered: false,
-            editing: false,
-            addNew: false,
-            addNewKey: ""
-        }
-        this.submitForm = this.submitForm.bind(this);
-        this.handleChange = this.handleChange.bind(this); 
-        this.cancelButton = this.cancelButton.bind(this);       
-    }
+const Skills = () => {
+    const [skillsList, setSkillsList] = useState([{
+        skillName: 'skill Name',
+        skills: 'list of skills',
+        id: uniqid(),
+        formtoggle: false
+    }]);
+    const [skill, setSkill] = useState({
+        skillName: 'skill Name',
+        skills: 'list of skills',
+        id: '',
+        formtoggle: false
+    });
+    const [divHovered, setDivHovered] = useState(false);
+    const [editing, setEditing] = useState(false);
+    const [addNew, setAddNew] = useState(false);
+    const [addNewKey, setAddNewKey] = useState("");
 
-    toggleButtons = (e) => {
-        if (!this.state.editing && !this.state.addNew) {
-            this.setState({
-                divHovered: !this.state.divHovered
-            })
+    const toggleButtons = (e) => {
+        if (!editing && !addNew) {
+            setDivHovered(!divHovered);
         }
       }
 
-    deleteButton = (e) => {
+    const deleteButton = (e) => {
         const targetId = e.target.parentElement.parentElement.id;
-        const index = this.state.skillsList.findIndex((item) => item.id === targetId);
+        const index = skillsList.findIndex((item) => item.id === targetId);
 
-        if (this.state.skillsList.length === 1) {
-            this.setState({
-                skillsList: []
-            })
+        if (skillsList.length === 1) {
+            setSkillsList([]);
         } else {
-            this.setState({
-                skillsList: this.state.skillsList.splice(index-1, 1)
-            })
+            setSkillsList(skillsList.splice(index-1, 1));
         };
     }
 
-    addButton = (e) => {
-        this.setState({
-            addNew: true,
-            addNewKey: uniqid()
-        })
+    const addButton = (e) => {
+        setAddNew(true);
+        setAddNewKey(uniqid());
     }
 
-    cancelButton = (e) => {
-        const targetId = e.target.parentElement.id;
+    const cancelButton = (e) => {
+        const targetId = e.target.parentElement.parentElement.id;
 
-        this.setState(prevState => ({
-            skillsList: prevState.skillsList.map(
-                el => el.id === targetId ? {...el, formtoggle: false}: el
-            ),
-            editing: false
-        }))
+        setSkillsList(skillsList.map(
+            el => el.id === targetId ? {...el, formtoggle: false}: el
+        ));
+        setEditing(false);
 
-        if (this.state.addNew) {
-            this.setState({addNew: false})
+        if (addNew) {
+            setAddNew(false);
         }
-        this.resetSkills();
+        resetSkills();
     }
 
-    editButton = (e) => {
-        if (!this.state.editing) {
+    const editButton = (e) => {
+        if (!editing) {
             const targetId = e.target.parentElement.parentElement.id;
-            const index = this.state.skillsList.findIndex((item) => item.id === targetId);
+            const index = skillsList.findIndex((item) => item.id === targetId);
 
-            this.setState(prevState => ({
-                skillsList: prevState.skillsList.map(
-                    el => el.id === targetId ? {...el, formtoggle: true}: el
-                ),
-                skill: this.state.skillsList[index],
-                editing: true
-            }))
+            setSkillsList(skillsList.map(
+                el => el.id === targetId ? {...el, formtoggle: true}: el
+            ));
+            setSkill(skillsList[index]);
+            setEditing(true);
         } else {
             alert("Only edit one section at a time.");
         }
         
     }
 
-    handleChange = (e) => {
+    const handleChange = (e) => {
         const value = e.target.value;
         const name = e.target.name;
-        this.setState({
-            skill: {
-                ...this.state.skill,
+        setSkill({
+            ...skill,
                 [name]: value
-            }
-        }); 
+        });
     }
 
-    submitForm = (e) => {
+    const submitForm = (e) => {
         e.preventDefault();
         const targetId = e.target.id;
-        if (this.state.addNew) {
-            this.setState({
-                editing: false,
-                skillsList: [...this.state.skillsList, this.state.skill],
-                addNew: false
-            })
+        if (addNew) {
+            setEditing(false);
+            setSkillsList([...skillsList, skill]);
+            setAddNew(false);
         } else {
-            this.setState(prevState => ({
-                editing: false,
-                skillsList: prevState.skillsList.map(
-                    el => el.id === targetId ? this.state.skill : el
-                )
-            }));
+            setEditing(false);
+            setSkillsList(skillsList.map(
+                el => el.id === targetId ? skill : el
+            ))
         }
-        this.resetSkills();
+        resetSkills();
     }
 
-    resetSkills = () => {
-        this.setState({
-            skill: {}            
-        })
+    const resetSkills = () => {
+        setSkill({});
     }
 
-    render() {
-        const {skillsList, divHovered, skill, addNew, addNewKey} = this.state;
-
-        return(
-            <div className="componentsDiv" onMouseEnter={this.toggleButtons} onMouseLeave={this.toggleButtons}>
-                {skillsList.map((item) => {
-                    if (item.formtoggle) {
-                        return <SkillsForm id={item.id} submitForm={this.submitForm} handleChange={this.handleChange} skill={skill} cancelButton={this.cancelButton} key={item.id}></SkillsForm>
-                    } else {
-                        return <div className="component" key={item.id} id={item.id}>
-                                    <div className="line">
-                                        <h3>{item.skillName}:</h3>
-                                        <p>{item.skills}</p>
-                                    </div>
-                                    <Buttons divHovered={divHovered} deleteButton={this.deleteButton} editButton={this.editButton}></Buttons>
+    return(
+        <div className="componentsDiv" onMouseEnter={toggleButtons} onMouseLeave={toggleButtons}>
+            {skillsList.map((item) => {
+                if (item.formtoggle) {
+                    return <SkillsForm id={item.id} submitForm={submitForm} handleChange={handleChange} skill={skill} cancelButton={cancelButton} key={item.id}></SkillsForm>
+                } else {
+                    return <div className="component" key={item.id} id={item.id}>
+                                <div className="line">
+                                    <h3>{item.skillName}:</h3>
+                                    <p>{item.skills}</p>
                                 </div>
-                                
-                    }
-                })}
-                {addNew ? <SkillsForm submitForm={this.submitForm} handleChange={this.handleChange} skill={skill} cancelButton={this.cancelButton} key={addNewKey}></SkillsForm>: null}
-                <button onClick={this.addButton}>+</button>
-            </div>
-        );
-    }
+                                <Buttons divHovered={divHovered} deleteButton={deleteButton} editButton={editButton}></Buttons>
+                            </div>
+                            
+                }
+            })}
+            {addNew ? <SkillsForm submitForm={submitForm} handleChange={handleChange} skill={skill} cancelButton={cancelButton} key={addNewKey}></SkillsForm>: null}
+            <button onClick={addButton}>+</button>
+        </div>
+    );
 }
 
 export default Skills;

@@ -1,15 +1,11 @@
-import React, { Component } from "react";
-//import '../styles/components.css';
+import React, { useState } from "react";
 import uniqid from "uniqid";
 import EducationForm from "./EducationForm";
 import EducationItem from "./EducationItem";
 
-class Education extends Component {
-    constructor () {
-        super();
-        this.state = {
-            educationList: [
-                {school: 'school',
+const Education = () => {
+    const [educationList, setEducationList] = useState([
+        {school: 'school',
                     city: 'city',
                     degree: 'degree',
                     year: 'year',
@@ -17,10 +13,107 @@ class Education extends Component {
                     gpa: 'gpa',
                     courses: 'courses',
                     id:uniqid(),
-                    formtoggle: false}, 
-                ],
-            education: {
-                school: '',
+                    formtoggle: false}
+    ])
+    const [education, setEducation] = useState(
+        {
+            school: '',
+            city: '',
+            degree: '',
+            year: '',
+            major: '',
+            gpa: '',
+            courses: '',
+            id:'',
+            formtoggle: false
+        }
+    )
+    const [divHovered, setDivHovered] = useState(false);
+    const [editing, setEditing] = useState(false);
+    const [addNew, setAddNew] = useState(false);
+    const [addNewKey, setAddNewKey] = useState("");
+
+    const toggleButtons = (e) => {
+        if (!editing && !addNew) {
+            setDivHovered(!divHovered);
+        }
+      }
+
+    const deleteButton = (e) => {
+        const targetId = e.target.parentElement.parentElement.id;
+        const index = educationList.findIndex((item) => item.id === targetId);
+
+        if (educationList.length === 1) {
+            setEducationList([]);
+        } else {
+            setEducationList(educationList.splice(index-1,1))
+        };
+    }
+
+    const addButton = (e) => {
+        setAddNew(true);
+        setAddNewKey(uniqid());
+    }
+
+    const cancelButton = (e) => {
+        const targetId = e.target.parentElement.parentElement.id;
+
+        setEducationList(educationList.map(
+            el => el.id === targetId ? {...el, formtoggle: false}: el
+        ))
+        setEditing(false);
+
+        if (addNew) {
+            setAddNew(false);
+        }
+        resetEducation();
+    }
+
+    const editButton = (e) => {
+        if (!editing) {
+            const targetId = e.target.parentElement.parentElement.id;
+            const index = educationList.findIndex((item) => item.id === targetId);
+
+            setEducationList(educationList.map(
+                el => el.id === targetId ? {...el, formtoggle: true}: el
+            ))
+            setEducation(educationList[index]);
+            setEditing(true);
+        } else {
+            alert("Only edit one section at a time.");
+        }
+        
+    }
+
+    const handleChange = (e) => {
+        const value = e.target.value;
+        const name = e.target.name;
+
+        setEducation({
+            ...education, 
+            [name]: value}
+        );
+    }
+
+    const submitForm = (e) => {
+        e.preventDefault();
+        const targetId = e.target.id;
+        if (addNew) {
+            setEditing(false);
+            setEducationList([...educationList, education]);
+            setAddNew(false);
+        } else {
+            setEditing(false);
+            setEducationList(educationList.map(
+                el => el.id === targetId ? education : el
+            ));
+        }
+        resetEducation();
+    }
+
+    const resetEducation = () => {
+        setEducation({
+            school: '',
                 city: '',
                 degree: '',
                 year: '',
@@ -29,147 +122,23 @@ class Education extends Component {
                 courses: '',
                 id:'',
                 formtoggle: false
-            },
-            divHovered: false,
-            editing: false,
-            addNew: false,
-            addNewKey: ""
-        }
-
-        this.deleteButton = this.deleteButton.bind(this);
-        this.editButton = this.editButton.bind(this);
-        this.submitForm = this.submitForm.bind(this);
-        this.handleChange = this.handleChange.bind(this); 
-        this.cancelButton = this.cancelButton.bind(this);
-    }
-
-    toggleButtons = (e) => {
-        if (!this.state.editing && !this.state.addNew) {
-            this.setState({
-                divHovered: !this.state.divHovered
-            })
-        }
-      }
-
-    deleteButton = (e) => {
-        const targetId = e.target.parentElement.parentElement.id;
-        const index = this.state.educationList.findIndex((item) => item.id === targetId);
-
-        if (this.state.educationList.length === 1) {
-            this.setState({
-                educationList: []
-            })
-        } else {
-            this.setState({
-                educationList: this.state.educationList.splice(index-1, 1)
-            })
-        };
-    }
-
-    addButton = (e) => {
-        this.setState({
-            addNew: true,
-            addNewKey: uniqid()
         })
     }
 
-    cancelButton = (e) => {
-        const targetId = e.target.parentElement.parentElement.id;
-
-        this.setState(prevState => ({
-            educationList: prevState.educationList.map(
-                el => el.id === targetId ? {...el, formtoggle: false}: el
-            ),
-            editing: false
-        }))
-
-        if (this.state.addNew) {
-            this.setState({addNew: false})
-        }
-        this.resetEducation();
-    }
-
-    editButton = (e) => {
-        if (!this.state.editing) {
-            const targetId = e.target.parentElement.parentElement.id;
-            const index = this.state.educationList.findIndex((item) => item.id === targetId);
-
-            this.setState(prevState => ({
-                educationList: prevState.educationList.map(
-                    el => el.id === targetId ? {...el, formtoggle: true}: el
-                ),
-                education: this.state.educationList[index],
-                editing: true
-            }))
-        } else {
-            alert("Only edit one section at a time.");
-        }
-        
-    }
-
-    handleChange = (e) => {
-        const value = e.target.value;
-        const name = e.target.name;
-        this.setState({
-            education: {
-                ...this.state.education,
-                [name]: value
-            }
-        }); 
-    }
-
-    submitForm = (e) => {
-        e.preventDefault();
-        const targetId = e.target.id;
-        if (this.state.addNew) {
-            this.setState({
-                editing: false,
-                educationList: [...this.state.educationList, this.state.education],
-                addNew: false
-            })
-        } else {
-            this.setState(prevState => ({
-                editing: false,
-                educationList: prevState.educationList.map(
-                    el => el.id === targetId ? this.state.education : el
-                )
-            }));
-        }
-        this.resetEducation();
-    }
-
-    resetEducation = () => {
-        this.setState({
-            education: {
-                school: '',
-                city: '',
-                degree: '',
-                year: '',
-                major: '',
-                gpa: '',
-                courses: '',
-                id:'',
-                formtoggle: false}
-        })
-    }
-
-    render() {
-        const {educationList, divHovered, education, addNew, addNewKey} = this.state;
-        return(
-            <div className="componentsDiv" onMouseEnter={this.toggleButtons} onMouseLeave={this.toggleButtons}>
-                {educationList.map((item) => {
-                    if (item.formtoggle) {
-                        return <EducationForm id={item.id} submitForm={this.submitForm} handleChange={this.handleChange} education={education} cancelButton={this.cancelButton} key={item.id}></EducationForm>
-                    } else {
-                        return <EducationItem item={item} deleteButton={this.deleteButton} editButton={this.editButton} toggleButtons={this.toggleButtons} divHovered={divHovered} key={item.id}></EducationItem>
-                    }
-                })}
-                {addNew ? <EducationForm submitForm={this.submitForm} handleChange={this.handleChange} education={education} cancelButton={this.cancelButton} key={addNewKey}></EducationForm>: null}
-                
-                <button onClick={this.addButton}>+</button>
-            </div>
-        );
-    }
+    return(
+        <div className="componentsDiv" onMouseEnter={toggleButtons} onMouseLeave={toggleButtons}>
+            {educationList.map((item) => {
+                if (item.formtoggle) {
+                    return <EducationForm id={item.id} submitForm={submitForm} handleChange={handleChange} education={education} cancelButton={cancelButton} key={item.id}></EducationForm>
+                } else {
+                    return <EducationItem item={item} deleteButton={deleteButton} editButton={editButton} toggleButtons={toggleButtons} divHovered={divHovered} key={item.id}></EducationItem>
+                }
+            })}
+            {addNew ? <EducationForm submitForm={submitForm} handleChange={handleChange} education={education} cancelButton={cancelButton} key={addNewKey}></EducationForm>: null}
+            
+            <button onClick={addButton}>+</button>
+        </div>
+    );
 }
 
 export default Education;

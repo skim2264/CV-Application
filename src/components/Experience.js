@@ -1,169 +1,135 @@
-import React, { Component } from "react";
-import '../styles/components.css';
+import React, { useState } from "react";
 import ExperienceItem from "./ExperienceItem";
 import ExperienceForm from "./ExperienceForm";
 import uniqid from "uniqid";
 
-class Experience extends Component {
-    constructor () {
-        super();
-        this.state = {
-            experienceList: [{
-                compName: 'company/group name',
+const Experience = () => {
+    const [experienceList, setExperienceList] = useState([{
+        compName: 'company/group name',
                 city: 'city',
                 posName: 'position name',
                 years: 'Years in position',
                 descrip: 'Description of position',
                 id: uniqid(),
                 formtoggle: false
-            }],
-            experience: {
-                compName: '',
+    }])
+    const [experience, setExperience] = useState({
+        compName: '',
                 city: '',
                 posName: '',
                 years: '',
                 descrip: '',
                 id: '',
                 formtoggle: false
-            },
-            divHovered: false,
-            editing: false,
-            addNew: false,
-            addNewKey: ""
-        }
-        this.deleteButton = this.deleteButton.bind(this);
-        this.editButton = this.editButton.bind(this);
-        this.submitForm = this.submitForm.bind(this);
-        this.handleChange = this.handleChange.bind(this); 
-        this.cancelButton = this.cancelButton.bind(this);
-    }
+    })
+    const [divHovered, setDivHovered] = useState(false);
+    const [editing, setEditing] = useState(false);
+    const [addNew, setAddNew] = useState(false);
+    const [addNewKey, setAddNewKey] = useState("");
 
-    toggleButtons = (e) => {
-        if (!this.state.editing && !this.state.addNew) {
-            this.setState({
-                divHovered: !this.state.divHovered
-            })
+    const toggleButtons = (e) => {
+        if (!editing && !addNew) {
+            setDivHovered(!divHovered);
         }
       }
 
-    deleteButton = (e) => {
+    const deleteButton = (e) => {
         const targetId = e.target.parentElement.parentElement.id;
-        const index = this.state.experienceList.findIndex((item) => item.id === targetId);
+        const index = experienceList.findIndex((item) => item.id === targetId);
 
-        if (this.state.experienceList.length === 1) {
-            this.setState({
-                experienceList: []
-            })
+        if (experienceList.length === 1) {
+            setExperienceList([]);
         } else {
-            this.setState({
-                experienceList: this.state.experienceList.splice(index-1, 1)
-            })
+            setExperienceList(experienceList.splice(index-1, 1))
         };
     }
 
-    addButton = (e) => {
-        this.setState({
-            addNew: true,
-            addNewKey: uniqid()
-        })
+    const addButton = (e) => {
+        setAddNew(true);
+        setAddNewKey(uniqid());
     }
 
-    cancelButton = (e) => {
+    const cancelButton = (e) => {
         const targetId = e.target.parentElement.parentElement.id;
 
-        this.setState(prevState => ({
-            experienceList: prevState.experienceList.map(
-                el => el.id === targetId ? {...el, formtoggle: false}: el
-            ),
-            editing: false
-        }))
+        setExperienceList(experienceList.map(
+            el => el.id === targetId ? {...el, formtoggle: false}: el
+        ));
+        setEditing(false);
 
-        if (this.state.addNew) {
-            this.setState({addNew: false})
+        if (addNew) {
+            setAddNew(false);
         }
-        this.resetExperience();
+        resetExperience();
     }
 
-    editButton = (e) => {
-        if (!this.state.editing) {
+    const editButton = (e) => {
+        if (!editing) {
             const targetId = e.target.parentElement.parentElement.id;
-            const index = this.state.experienceList.findIndex((item) => item.id === targetId);
+            const index = experienceList.findIndex((item) => item.id === targetId);
 
-            this.setState(prevState => ({
-                experienceList: prevState.experienceList.map(
-                    el => el.id === targetId ? {...el, formtoggle: true}: el
-                ),
-                experience: this.state.experienceList[index],
-                editing: true
-            }))
+            setExperienceList(experienceList.map(
+                el => el.id === targetId ? {...el, formtoggle: true}: el
+            ));
+            setExperience(experienceList[index]);
+            setEditing(true);
         } else {
             alert("Only edit one section at a time.");
         }
         
     }
 
-    handleChange = (e) => {
+    const handleChange = (e) => {
         const value = e.target.value;
         const name = e.target.name;
-        this.setState({
-            experience: {
-                ...this.state.experience,
-                [name]: value
-            }
-        }); 
-    }
-
-    submitForm = (e) => {
-        e.preventDefault();
-        const targetId = e.target.id;
-        if (this.state.addNew) {
-            this.setState({
-                editing: false,
-                experienceList: [...this.state.experienceList, this.state.experience],
-                addNew: false
-            })
-        } else {
-            this.setState(prevState => ({
-                editing: false,
-                experienceList: prevState.experienceList.map(
-                    el => el.id === targetId ? this.state.experience : el
-                )
-            }));
-        }
-        this.resetExperience();
-    }
-
-    resetExperience = () => {
-        this.setState({
-            experience: {
-                compName: '',
-                city: '',
-                posName: '',
-                years: '',
-                descrip: '',
-                id: '',
-                formtoggle: false
-            }            
+        setExperience({
+            ...experience,
+            [name]: value
         })
     }
 
-    render() {
-        const {experienceList, divHovered, experience, addNew, addNewKey} = this.state;
-        return(
-            <div className="componentsDiv" onMouseEnter={this.toggleButtons} onMouseLeave={this.toggleButtons}>
-                {experienceList.map((item) => {
-                    if (item.formtoggle) {
-                        return <ExperienceForm id={item.id} submitForm={this.submitForm} handleChange={this.handleChange} experience={experience} cancelButton={this.cancelButton} key={item.id}></ExperienceForm>
-                    } else {
-                        return <ExperienceItem item={item} deleteButton={this.deleteButton} editButton={this.editButton} toggleButtons={this.toggleButtons} divHovered={divHovered} key={item.id}></ExperienceItem>
-                    }
-                })}
-                {addNew ? <ExperienceForm submitForm={this.submitForm} handleChange={this.handleChange} experience={experience} cancelButton={this.cancelButton} key={addNewKey}></ExperienceForm>: null}
-        
-                <button onClick={this.addButton}>+</button>
-            </div>
-        );
+    const submitForm = (e) => {
+        e.preventDefault();
+        const targetId = e.target.id;
+        if (addNew) {
+            setEditing(false);
+            setExperienceList([...experienceList, experience]);
+            setAddNew(false);
+        } else {
+            setEditing(false);
+            setExperienceList(experienceList.map(
+                el => el.id === targetId ? experience : el
+            ))
+        }
+        resetExperience();
     }
+
+    const resetExperience = () => {
+        setExperience({
+            compName: '',
+            city: '',
+            posName: '',
+            years: '',
+            descrip: '',
+            id: '',
+            formtoggle: false
+        })
+    }
+
+    return(
+        <div className="componentsDiv" onMouseEnter={toggleButtons} onMouseLeave={toggleButtons}>
+            {experienceList.map((item) => {
+                if (item.formtoggle) {
+                    return <ExperienceForm id={item.id} submitForm={submitForm} handleChange={handleChange} experience={experience} cancelButton={cancelButton} key={item.id}></ExperienceForm>
+                } else {
+                    return <ExperienceItem item={item} deleteButton={deleteButton} editButton={editButton} toggleButtons={toggleButtons} divHovered={divHovered} key={item.id}></ExperienceItem>
+                }
+            })}
+            {addNew ? <ExperienceForm submitForm={submitForm} handleChange={handleChange} experience={experience} cancelButton={cancelButton} key={addNewKey}></ExperienceForm>: null}
+    
+            <button onClick={addButton}>+</button>
+        </div>
+    );
 }
 
 export default Experience;

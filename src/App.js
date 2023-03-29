@@ -1,4 +1,6 @@
 import './styles/App.css';
+import './styles/components.css';
+import './styles/information.css'
 import React, { Component } from "react";
 import Information from './components/Information';
 import Header from './components/Header';
